@@ -579,7 +579,7 @@ a {
    opacity: 0.5;
    font-weight: 700;
    border: none;
-   background-color: transparent;
+   /* background-color: transparent; */
    cursor: pointer;
 }
 .modal__title {
