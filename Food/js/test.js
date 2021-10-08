@@ -51,12 +51,7 @@ Promise.race([test(1000), test(2000)]).then(() => {
    console.log('All');
 });
 
-
-
-
   // Forms
-
-
    const forms = document.querySelectorAll('form');
 
    const message = {
@@ -112,3 +107,11 @@ Promise.race([test(1000), test(2000)]).then(() => {
          });
       });
    }
+
+
+const obj = {
+   a: '1',
+   b: '2',
+} 
+
+console.log(Object.fromEntries(Object.entries(obj)));

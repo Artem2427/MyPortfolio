@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
    });
 
    // Timer
-   const deadLine = '2021-11-27';
+   const deadLine = '2021-10-23';
 
    function getTiemRemaining(endTime) {
       const t = Date.parse(endTime) - Date.parse(new Date()),
@@ -55,6 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
       };
    }
 
+   function addZero(num) {
+      if (num >= 0 && num < 10) {
+         return `0${num}`;
+      } else {
+         return num;
+      }
+   }
+
    function setClock(selector, endtime) {
       const timer = document.querySelector(selector),
          days = timer.querySelector('#days'),
@@ -62,14 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
          minutes = timer.querySelector('#minutes'),
          seconds = timer.querySelector('#seconds'),
          timeInterval = setInterval(updateClock, 1000);
-
-      function addZero(num) {
-         if (num >= 0 && num < 10) {
-            return `0${num}`;
-         } else {
-            return num;
-         }
-      }
 
       updateClock();
       function updateClock() {
@@ -183,17 +183,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(url);
 
       if (!res.ok) {
-         throw new Error (`Could not fetch ${url}, status: ${res.status}`);
+         throw new Error(`Could not fetch ${url}, status: ${res.status}`);
       }
       return await res.json();
    };
 
-   getSource('http://localhost:3000/menu')
-      .then( data => {
-         data.forEach( ({img, altimg, title, descr, price}) => {
-            new Card(img, altimg, title, descr, price, '.menu__field .container','menu__item').render();
-         })
-      })
+   getSource('http://localhost:3000/menu').then((data) => {
+      data.forEach(({ img, altimg, title, descr, price }) => {
+         new Card(
+            img,
+            altimg,
+            title,
+            descr,
+            price,
+            '.menu__field .container',
+            'menu__item'
+         ).render();
+      });
+   });
 
    // Forms
 
@@ -218,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
          body: data,
       });
       return await res.json();
-   }
+   };
 
    function bindPostData(form) {
       form.addEventListener('submit', (e) => {
@@ -233,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
          form.insertAdjacentElement('afterend', statusMessage);
 
          const formData = new FormData(form);
-         
+
          // перевод в json формат  1 способ
          // const object = {};
          // formData.forEach(function (value, key) {
@@ -281,4 +288,109 @@ document.addEventListener('DOMContentLoaded', () => {
          closeModal();
       }, 3000);
    }
+
+   // Slider
+
+   const slider = document.querySelector('.offer__slider'),
+      items = slider.querySelectorAll('.offer__slide'),
+      navigation = slider.querySelector('.offer__slider-counter'),
+      current = slider.querySelector('#current'),
+      total = slider.querySelector('#total'),
+      sliderWrapper = slider.querySelector('.offer__slider-wrapper'),
+      sliderField = slider.querySelector('.offer__slider-inner'),
+      width = window.getComputedStyle(sliderWrapper).width;
+
+   let startIndex = 1;
+   let offset = 0;
+
+   total.innerHTML = addZero(items.length);
+   current.innerHTML = addZero(startIndex);
+   // current.innerHTML = addZero(startIndex);
+
+   sliderField.style.cssText = ` 
+         width: ${100 * items.length}%;
+         display: flex;
+         transition: 0.5s ease 0s;
+         
+   `;
+
+   sliderWrapper.style.cssText = `overflow: hidden;`;
+   items.forEach((item) => {
+      item.style.width = width;
+   });
+
+   slider.style.position = 'relative';
+
+   const indecators = document.createElement('ol'),
+      dots = [];
+   indecators.classList.add('carousel-indicators');
+   for (let i = 0; i < items.length; i++) {
+      const dot = document.createElement('li');
+      dot.classList.add('dot');
+      dot.setAttribute('data-slide-to', i + 1);
+      if (i == 0) {
+         dot.style.opacity = 1;
+      }
+      indecators.append(dot);
+      dots.push(dot);
+   }
+   slider.append(indecators);
+
+   function toNumber (string) {
+      return Number(string.replace(/\D/g, ''));
+   }
+
+   navigation.addEventListener('click', (e) => {
+      if (e.target && e.target.matches('.offer__slider-prev')) {
+         if (offset == 0) {
+            offset = toNumber(width) * (items.length - 1);
+         } else {
+            offset -= toNumber(width);
+         }
+         sliderField.style.transform = `translateX(-${offset}px)`;
+
+         if (startIndex == 1) {
+            startIndex = items.length;
+         } else {
+            startIndex--;
+         }
+
+         current.textContent = addZero(startIndex);
+
+         dots.forEach((dot) => (dot.style.opacity = '.5'));
+         dots[startIndex - 1].style.opacity = '1';
+      } else if (e.target && e.target.matches('.offer__slider-next')) {
+         if (offset == toNumber(width) * (items.length - 1)) {
+            offset = 0;
+         } else {
+            offset += toNumber(width);
+         }
+         sliderField.style.transform = `translateX(-${offset}px)`;
+
+         if (startIndex == items.length) {
+            startIndex = 1;
+         } else {
+            startIndex++;
+         }
+         current.textContent = addZero(startIndex);
+         dots.forEach((dot) => (dot.style.opacity = '.5'));
+         dots[startIndex - 1].style.opacity = '1';
+      }
+   });
+
+   dots.forEach((dot) => {
+      dot.addEventListener('click', (e) => {
+         const slideTo = e.target.getAttribute('data-slide-to');
+
+         startIndex = slideTo;
+         offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+
+         sliderField.style.transform = `translateX(-${offset}px)`;
+
+         current.textContent = addZero(startIndex);
+
+         dots.forEach((dot) => (dot.style.opacity = '.5'));
+         dots[startIndex - 1].style.opacity = '1';
+      });
+   });
 });
