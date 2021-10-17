@@ -1,13 +1,15 @@
-function slider() {
-   // Slider
+import { addZero } from './timer';
 
-   const slider = document.querySelector('.offer__slider'),
-      items = slider.querySelectorAll('.offer__slide'),
-      navigation = slider.querySelector('.offer__slider-counter'),
-      current = slider.querySelector('#current'),
-      total = slider.querySelector('#total'),
-      sliderWrapper = slider.querySelector('.offer__slider-wrapper'),
-      sliderField = slider.querySelector('.offer__slider-inner'),
+function slider({ container, slide, nextArrow, prevArrow, totalCounter, currentCounter,wrapper, field}) {
+   // Slider
+   const slider = document.querySelector(container),
+      items = slider.querySelectorAll(slide),
+      prev = document.querySelector(prevArrow),
+      next = document.querySelector(nextArrow),
+      current = slider.querySelector(currentCounter),
+      total = slider.querySelector(totalCounter),
+      sliderWrapper = slider.querySelector(wrapper),
+      sliderField = slider.querySelector(field),
       width = window.getComputedStyle(sliderWrapper).width;
 
    let startIndex = 1;
@@ -54,40 +56,41 @@ function slider() {
       dots[startIndex - 1].style.opacity = '1';
    }
 
-   navigation.addEventListener('click', (e) => {
-      if (e.target && e.target.matches('.offer__slider-prev')) {
-         if (offset == 0) {
-            offset = toNumber(width) * (items.length - 1);
-         } else {
-            offset -= toNumber(width);
-         }
-         sliderField.style.transform = `translateX(-${offset}px)`;
 
-         if (startIndex == 1) {
-            startIndex = items.length;
-         } else {
-            startIndex--;
-         }
-
-         current.textContent = addZero(startIndex);
-         whichDot();
-      } else if (e.target && e.target.matches('.offer__slider-next')) {
-         if (offset == toNumber(width) * (items.length - 1)) {
-            offset = 0;
-         } else {
-            offset += toNumber(width);
-         }
-         sliderField.style.transform = `translateX(-${offset}px)`;
-
-         if (startIndex == items.length) {
-            startIndex = 1;
-         } else {
-            startIndex++;
-         }
-         current.textContent = addZero(startIndex);
-         whichDot();
+   prev.addEventListener('click', () => {
+      if (offset == 0) {
+         offset = toNumber(width) * (items.length - 1);
+      } else {
+         offset -= toNumber(width);
       }
+      sliderField.style.transform = `translateX(-${offset}px)`;
+
+      if (startIndex == 1) {
+         startIndex = items.length;
+      } else {
+         startIndex--;
+      }
+
+      current.textContent = addZero(startIndex);
+      whichDot();
    });
+
+   next.addEventListener('click', () => {
+      if (offset == toNumber(width) * (items.length - 1)) {
+         offset = 0;
+      } else {
+         offset += toNumber(width);
+      }
+      sliderField.style.transform = `translateX(-${offset}px)`;
+
+      if (startIndex == items.length) {
+         startIndex = 1;
+      } else {
+         startIndex++;
+      }
+      current.textContent = addZero(startIndex);
+      whichDot();
+   })
 
    dots.forEach((dot) => {
       dot.addEventListener('click', (e) => {
@@ -104,4 +107,4 @@ function slider() {
    });
 }
 
-module.exports = slider;
+export default slider;

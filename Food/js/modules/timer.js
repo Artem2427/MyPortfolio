@@ -1,7 +1,13 @@
-function timer() {
-   // Timer
-   const deadLine = '2021-10-23';
+function addZero(num) {
+   if (num >= 0 && num < 10) {
+      return `0${num}`;
+   } else {
+      return num;
+   }
+}
 
+function timer(id, deadLine) {
+   // Timer
    function getTiemRemaining(endTime) {
       const t = Date.parse(endTime) - Date.parse(new Date()),
          days = Math.floor(t / (1000 * 3600 * 24)),
@@ -15,14 +21,6 @@ function timer() {
          minutes,
          seconds,
       };
-   }
-
-   function addZero(num) {
-      if (num >= 0 && num < 10) {
-         return `0${num}`;
-      } else {
-         return num;
-      }
    }
 
    function setClock(selector, endtime) {
@@ -47,7 +45,9 @@ function timer() {
          }
       }
    }
-   setClock('.timer', deadLine);
+   setClock(id, deadLine);
 }
 
-module.exports = timer;
+export { addZero };
+export default timer;
+
