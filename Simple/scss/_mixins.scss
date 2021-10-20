@@ -1,0 +1,6 @@
+@mixin hover-btn() {
+	&:hover {
+		background-image: none;
+		background: $f-c;
+	}
+}
